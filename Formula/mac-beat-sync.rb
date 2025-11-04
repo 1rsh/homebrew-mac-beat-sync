@@ -3,8 +3,8 @@ class MacBeatSync < Formula
 
   desc "Real-time audio-reactive keyboard brightness controller for macOS"
   homepage "https://github.com/1rsh/mac-beat-sync"
-  url "https://github.com/1rsh/mac-beat-sync/archive/refs/tags/v0.0.1.tar.gz"
-  sha256 "b57fc2570447b622e7d2ea5f47b10e3018d348a788265342563cdd8e74dc3fa9"
+  url "https://github.com/1rsh/mac-beat-sync/archive/refs/tags/v1.0.1.tar.gz"
+  sha256 "42b357dac9311e23bc5570ca8165095284467d76078fa47d57cbf7a4a345d220"
   license "MIT"
   head "https://github.com/1rsh/mac-beat-sync.git", branch: "main"
 
