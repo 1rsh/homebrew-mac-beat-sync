@@ -1,0 +1,45 @@
+name: Update Homebrew Formula
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tap repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get release info
+        id: release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const release = context.payload.release;
+            return {
+              tag: release.tag_name,
+              tarball_url: release.tarball_url
+            };
+
+      - name: Download tarball and compute SHA256
+        run: |
+          curl -L ${{ steps.release.outputs.tarball_url }} -o mac-beat-sync.tar.gz
+          echo "sha256=$(shasum -a 256 mac-beat-sync.tar.gz | awk '{print $1}')" >> $GITHUB_ENV
+
+      - name: Update Formula
+        run: |
+          tag=${{ steps.release.outputs.tag }}
+          sed -i.bak "s|url \".*\"|url \"https://github.com/1rsh/mac-beat-sync/archive/refs/tags/${tag}.tar.gz\"|" Formula/mac-beat-sync.rb
+          sed -i.bak "s|sha256 \".*\"|sha256 \"${sha256}\"|" Formula/mac-beat-sync.rb
+          rm Formula/mac-beat-sync.rb.bak
+
+      - name: Commit and push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add Formula/mac-beat-sync.rb
+          git commit -m "Update mac-beat-sync formula for ${{ steps.release.outputs.tag }}"
+          git push
