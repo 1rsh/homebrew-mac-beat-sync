@@ -9,7 +9,6 @@ class MacBeatSync < Formula
   head "https://github.com/1rsh/mac-beat-sync.git", branch: "main"
 
   depends_on "python@3.11"
-  depends_on "rakalex/mac-brightnessctl"
 
   def install
     venv = virtualenv_create(libexec, Formula["python@3.11"].opt_bin/"python3")
