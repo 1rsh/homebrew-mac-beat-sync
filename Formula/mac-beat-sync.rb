@@ -11,17 +11,17 @@ class MacBeatSync < Formula
   depends_on "python@3.11"
 
   def install
-    # Create isolated Python environment
+    # Create isolated Python virtual environment
     venv = virtualenv_create(libexec, Formula["python@3.11"].opt_bin/"python3")
 
-    # Install dependencies if requirements.txt exists
-    reqs = buildpath/"requirements.txt"
-    if reqs.exist?
-      venv.pip_install ["--upgrade", "pip", "setuptools", "wheel"]
-      venv.pip_install reqs
-    end
+    # Ensure pip and build tools are up-to-date
+    venv.pip_install ["--upgrade", "pip", "setuptools", "wheel"]
 
-    # Install mac-beat-sync package and symlink its CLI
+    # Install Python dependencies if requirements.txt exists
+    reqs = buildpath/"requirements.txt"
+    venv.pip_install reqs if reqs.exist?
+
+    # Install mac-beat-sync and link its executable
     venv.pip_install_and_link buildpath
   end
 
@@ -38,12 +38,13 @@ class MacBeatSync < Formula
            brew tap rakalex/mac-brightnessctl
            brew install mac-brightnessctl
 
-      🧩 Python virtual environment:
-         mac-beat-sync runs in an isolated Python 3.11 virtualenv managed by Homebrew.
+      🧩 Python environment:
+         mac-beat-sync runs in a Homebrew-managed Python 3.11 virtual environment.
     EOS
   end
 
   test do
+    # Verify CLI works
     system "#{bin}/mac-beat-sync", "--help"
   end
 end
