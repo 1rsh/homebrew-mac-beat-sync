@@ -11,29 +11,35 @@ class MacBeatSync < Formula
   depends_on "python@3.11"
 
   def install
+    # Create isolated Python environment
     venv = virtualenv_create(libexec, Formula["python@3.11"].opt_bin/"python3")
 
+    # Install dependencies if requirements.txt exists
     reqs = buildpath/"requirements.txt"
     if reqs.exist?
-      system venv.instance_variable_get(:@venv_root)/"bin/pip", "install", "--upgrade", "pip", "setuptools", "wheel"
-      system venv.instance_variable_get(:@venv_root)/"bin/pip", "install", "-r", reqs
-    else
-      opoo "⚠️ requirements.txt not found in source — skipping pip dependency install."
+      venv.pip_install ["--upgrade", "pip", "setuptools", "wheel"]
+      venv.pip_install reqs
     end
 
+    # Install mac-beat-sync package and symlink its CLI
     venv.pip_install_and_link buildpath
   end
 
   def caveats
     <<~EOS
-      🎧 mac-beat-sync has been installed!
+      🎧 mac-beat-sync has been installed successfully!
 
-      To start the controller:
-        mac-beat-sync
+      ▶ To start the controller:
+         mac-beat-sync
 
-      Note: `mac-brightnessctl` is required and comes from the external tap:
-        brew tap rakalex/mac-brightnessctl
-        brew install mac-brightnessctl
+      ⚙️  Dependency note:
+         This tool relies on `mac-brightnessctl` for brightness control.
+         If not already installed, run:
+           brew tap rakalex/mac-brightnessctl
+           brew install mac-brightnessctl
+
+      🧩 Python virtual environment:
+         mac-beat-sync runs in an isolated Python 3.11 virtualenv managed by Homebrew.
     EOS
   end
 
